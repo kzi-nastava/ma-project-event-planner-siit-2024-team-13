@@ -68,8 +68,6 @@ public class ServiceDetailsFragment extends Fragment {
         }
         serviceViewModel.getService(getArguments().getLong(ARG_ID)).observe(getViewLifecycleOwner(), service -> {
             if(service != null) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
-
                 binding.serviceName.setText(service.getName());
                 binding.servicePrice.setText(service.getPrice().toString());
                 binding.serviceDescription.setText(service.getDescription());
@@ -78,8 +76,8 @@ public class ServiceDetailsFragment extends Fragment {
                 binding.duration.setText("Duration:" + (service.getMinDuration().equals(service.getMaxDuration())
                         ? service.getMinDuration() + "h"
                         : service.getMinDuration() + "h -" + service.getMaxDuration() + "h"));
-                binding.reservationDeadline.setText("Reservation deadline: " + service.getReservationDeadline().format(formatter));
-                binding.cancellationDeadline.setText("Cancellation deadline: " + service.getCancellationDeadline().format(formatter));
+                binding.reservationDeadline.setText("Reservation deadline: " + service.getReservationDeadline() + " days");
+                binding.cancellationDeadline.setText("Cancellation deadline: " + service.getCancellationDeadline() + " days");
                 binding.rating.setText(service.getRating().toString());
 
                 serviceViewModel.getServiceImages(service.getId()).observe(getViewLifecycleOwner(), images -> {
@@ -119,7 +117,7 @@ public class ServiceDetailsFragment extends Fragment {
                         Toast.makeText(
                                 requireContext(),
                                 getString(R.string.added_service)
-                                        + name
+                                        + name + " "
                                         + getString(R.string.to_favourites),
                                 Toast.LENGTH_SHORT
                         ).show();

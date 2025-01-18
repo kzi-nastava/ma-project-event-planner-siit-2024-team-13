@@ -295,9 +295,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:focusable="false"
                     android:fontFamily="@font/jejumyeongjo"
-                    android:inputType="none"/>
+                    android:inputType="number"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -321,9 +320,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:fontFamily="@font/jejumyeongjo"
-                    android:focusable="false"
-                    android:inputType="none"
-                    android:textColor="@android:color/black" />
+                    android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView

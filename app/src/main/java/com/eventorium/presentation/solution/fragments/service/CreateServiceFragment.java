@@ -98,58 +98,12 @@ public class CreateServiceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCreateServiceBinding.inflate(inflater, container, false);
-        createDatePickers();
         loadCategories();
         loadEventTypes();
         binding.manualChecked.setChecked(true);
         setupImagePicker();
         binding.createServiceButton.setOnClickListener(v -> createService());
         return binding.getRoot();
-    }
-
-    private TextInputEditText reservationDate;
-    private TextInputEditText cancellationDate;
-    private void createDatePickers() {
-        setupReservationPicker();
-        setupCancellationPicker();
-    }
-
-    private void setupReservationPicker() {
-        reservationDate = binding.serviceReservationDeadlineText;
-
-        MaterialDatePicker<Long> reservationPicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select a Date")
-                .build();
-
-
-        reservationDate.setOnClickListener(v ->
-                reservationPicker.show(requireActivity().getSupportFragmentManager(), "DATE_PICKER"));
-
-        reservationPicker.addOnPositiveButtonClickListener(selection -> {
-            LocalDate selectedDate = Instant.ofEpochMilli(selection)
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-            String formattedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy."));
-            reservationDate.setText(formattedDate);
-        });
-    }
-
-    private void setupCancellationPicker() {
-        cancellationDate = binding.serviceCancellationDeadlineText;
-        MaterialDatePicker<Long> cancellationPicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select a Date")
-                .build();
-
-        cancellationDate.setOnClickListener(v ->
-                cancellationPicker.show(requireActivity().getSupportFragmentManager(), "DATE_PICKER"));
-
-        cancellationPicker.addOnPositiveButtonClickListener(selection -> {
-            LocalDate selectedDate = Instant.ofEpochMilli(selection)
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-            String formattedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy."));
-            cancellationDate.setText(formattedDate);
-        });
     }
 
     @Override
@@ -242,14 +196,6 @@ public class CreateServiceFragment extends Fragment {
                     : ReservationType.AUTOMATIC;
 
             List<Float> duration = binding.serviceDuration.getValues();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
-
-            LocalDate cancellationDate = LocalDate.parse(binding.serviceCancellationDeadlineText.getText(), formatter);
-            LocalDate reservationDate = LocalDate.parse(binding.serviceReservationDeadlineText.getText(), formatter);
-
-            if(!validateDates(cancellationDate, reservationDate)) {
-                return null;
-            }
 
             return CreateService.builder()
                     .name(String.valueOf(binding.serviceNameText.getText()))
@@ -257,8 +203,8 @@ public class CreateServiceFragment extends Fragment {
                     .price(Double.parseDouble(String.valueOf(binding.servicePriceText.getText())))
                     .discount(Double.parseDouble(String.valueOf(binding.serviceDiscountText.getText())))
                     .specialties(String.valueOf(binding.serviceSpecificitiesText.getText()))
-                    .cancellationDeadline(cancellationDate)
-                    .reservationDeadline(reservationDate)
+                    .cancellationDeadline(Integer.valueOf(String.valueOf(binding.serviceReservationDeadlineText.getText())))
+                    .reservationDeadline(Integer.valueOf(String.valueOf(binding.serviceReservationDeadlineText.getText())))
                     .minDuration(duration.get(0).intValue())
                     .maxDuration(duration.get(1).intValue())
                     .type(type)
@@ -276,37 +222,6 @@ public class CreateServiceFragment extends Fragment {
             return null;
         }
     }
-
-    private boolean validateDates(LocalDate cancellationDate, LocalDate reservationDate) {
-        if(cancellationDate.isBefore(LocalDate.now())) {
-            Toast.makeText(
-                    requireContext(),
-                    R.string.reservation_date_in_past,
-                    Toast.LENGTH_LONG
-            ).show();
-            return false;
-        }
-
-        if(reservationDate.isBefore(LocalDate.now())) {
-            Toast.makeText(
-                    requireContext(),
-                    R.string.cancellation_date_in_past,
-                    Toast.LENGTH_LONG
-            ).show();
-            return false;
-        }
-
-        if(cancellationDate.isBefore(reservationDate)) {
-            Toast.makeText(
-                    requireContext(),
-                    R.string.cancellation_after_reservation,
-                    Toast.LENGTH_LONG
-            ).show();
-            return false;
-        }
-        return true;
-    }
-
     private void handleUpload(boolean successfulUpload) {
         if(successfulUpload) {
             Toast.makeText(
