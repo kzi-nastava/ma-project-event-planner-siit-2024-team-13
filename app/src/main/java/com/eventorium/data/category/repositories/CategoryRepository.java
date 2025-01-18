@@ -114,14 +114,16 @@ public class CategoryRepository {
     }
 
     public LiveData<Boolean> deleteCategory(Long id) {
-        MutableLiveData<Boolean> liveData = new MutableLiveData<>(true);
+        MutableLiveData<Boolean> liveData = new MutableLiveData<>();
         categoryService.deleteCategory(id).enqueue(new Callback<>() {
             @Override
             public void onResponse(
                     @NonNull Call<Void> call,
                     @NonNull Response<Void> response
             ) {
-                if (!response.isSuccessful()) {
+                if (response.isSuccessful()) {
+                    liveData.postValue(true);
+                } else {
                     liveData.postValue(false);
                 }
             }
