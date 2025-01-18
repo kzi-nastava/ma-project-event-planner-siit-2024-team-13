@@ -98,8 +98,6 @@ public class ManageServiceFragment extends Fragment {
             @Override
             public void onSeeMoreClick(ServiceSummary serviceSummary) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.fragment_nav_content_main);
-                NavGraph currentGraph = navController.getGraph();
-                Log.d("Navigation", "Current Graph: " + currentGraph);
                 navController.navigate(R.id.action_manageServices_to_serviceDetails,
                         ServiceDetailsFragment.newInstance(serviceSummary.getId()).getArguments());
             }
@@ -145,16 +143,17 @@ public class ManageServiceFragment extends Fragment {
                 .setPositiveButton("Delete", (dialog, which) -> {
                     manageableServiceViewModel.deleteService(service.getId())
                             .observe(getViewLifecycleOwner(), success -> {
-                                if(success.getError() == null) {
+                                if(success) {
                                     Toast.makeText(
                                             requireContext(),
                                             R.string.service_deleted_successfully,
                                             Toast.LENGTH_SHORT
                                     ).show();
+                                    manageableServiceViewModel.removeService(service.getId());
                                 } else {
                                     Toast.makeText(
                                             requireContext(),
-                                            success.getError(),
+                                            R.string.failed_to_delete_service,
                                             Toast.LENGTH_SHORT
                                     ).show();
                                 }

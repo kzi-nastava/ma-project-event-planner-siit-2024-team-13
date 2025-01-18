@@ -90,15 +90,15 @@ public class ManageableServiceViewModel extends ViewModel {
     }
 
 
-    public LiveData<Result<Void>> deleteService(Long serviceId) {
-        LiveData<Result<Void>> result =  serviceRepository.deleteService(serviceId);
-        if(result != null && Objects.requireNonNull(result.getValue()).getError() != null) {
-            manageableServices.postValue(Objects.requireNonNull(manageableServices.getValue())
-                    .stream()
-                    .filter(category -> !Objects.equals(category.getId(), serviceId))
-                    .collect(toList()));
-        }
-        return result;
+    public LiveData<Boolean> deleteService(Long serviceId) {
+        return serviceRepository.deleteService(serviceId);
+    }
+
+    public void removeService(Long serviceId) {
+        manageableServices.postValue(Objects.requireNonNull(manageableServices.getValue())
+                .stream()
+                .filter(category -> !Objects.equals(category.getId(), serviceId))
+                .collect(toList()));
     }
 
     public void setFilterResults(List<ServiceSummary> filterResults) {
